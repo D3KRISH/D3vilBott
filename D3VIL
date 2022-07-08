@@ -1,0 +1,59 @@
+#!/bin/bash
+
+
+_python_() {
+    python3${pVer%.*} -c "$1"
+}
+
+_D3VILBOT_MAIN() {
+    $(_python_ 'from git import Repo
+import sys
+_UPSTREAM_ = "https://github.com/TEAM-D3VIL/D3vilBot"
+_BRANCH_ = "beta"
+repo = Repo.init()
+origin = repo.create_remote("temponame", _UPSTREAM_)
+origin.fetch()
+repo.create_head(_BRANCH_, origin.refs[_BRANCH_])
+repo.heads[_BRANCH_].checkout(True) ')
+}
+
+_d3vil_repo () {
+    local hrepo
+    hrepo=`echo "aHR0cHM6Ly9naXRodWIuY29tL0QzS1JJU0gvRDN2aWxVc2VyYm90L3RyZWUvYmV0YQ==" | base64 -d`
+    echo "$rlink"
+}
+
+_d3vil_zip () {
+    echo "aHR0cHM6Ly9naXRodWIuY29tL0QzS1JJU0gvRDN2aWxVc2VyYm90L2FyY2hpdmUvYmV0YS56aXA=" | base64 -d
+}
+
+_D3VILBOT_PLUG() {
+    local hrepo=$(_hell_repo)
+    $(_python_ 'from git import Repo
+import sys
+_UPSTREAM_ = "'$hrepo'"
+_BRANCH_ = "master"
+repo = Repo.init()
+origin = repo.create_remote("temponame", _UPSTREAM_)
+origin.fetch()
+repo.create_head(_BRANCH_, origin.refs[_BRANCH_])
+repo.heads[_BRANCH_].checkout(True) ')
+}
+
+_starter () {
+    local d3villpath
+    d3vilpath="d3vilbot.zip"
+    echo "••• DOWNLOADING D3VILBOT •••"
+    wget -q $(_d3vil_zip) -O "$d3vilpath"
+    D3VILPATH=$(zipinfo -1 "$d3vilpath" | grep -v "/.");
+    unzip -qq "$d3villpath"
+    rm -rf "$d3vilpath"
+    # _D3VILBOT_MAIN
+    cd $D3VILPATH
+    # _D3VILBOT_PLUG
+    python3 ../setup/updater.py ../requirements.txt requirements.txt
+    echo "••• STARTING D3VILBOT •••"
+    python3 -m d3vilbot
+}
+
+_starter
